@@ -7,7 +7,13 @@ export async function interaction(prompt) {
         throw new Error("GEMINI_API_KEY is not configured.");
     }
 
-    const ai = new GoogleGenAI({ apiKey });
+    const ai = new GoogleGenAI({
+        apiKey,
+        httpOptions: {
+            timeout: 60000,
+            retryOptions: { attempts: 1 },
+        },
+    });
 
     const result = await ai.models.generateContent({
         model: process.env.GEMINI_MODEL || "gemini-3.8-flash",

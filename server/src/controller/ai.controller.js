@@ -14,6 +14,7 @@ const getReview = async (req, res) => {
         return res.json({ response });
     } 
     catch (error) {
+        console.error("Failed to generate code review:", error);
         return res.status(502).json({ error: "Failed to generate an AI response." });
     }
 };

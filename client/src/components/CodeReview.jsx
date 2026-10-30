@@ -20,6 +20,11 @@ const CodeReview = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ code }),
             });
+
+            if (!response.headers.get('content-type')?.includes('application/json')) {
+                throw new Error(`The review API returned an unexpected response (HTTP ${response.status}).`);
+            }
+
             const result = await response.json();
 
             if (!response.ok) {
@@ -31,9 +36,11 @@ const CodeReview = () => {
             }
 
             setReview(result.response);
-        } catch (requestError) {
+        }
+        catch (requestError) {
             setError(requestError.message || 'Unable to reach the review service.');
-        } finally {
+        }
+        finally {
             setIsSubmitting(false);
         }
     };
@@ -79,7 +86,7 @@ const CodeReview = () => {
                             className="min-h-72 w-full resize-y bg-[#fdfcf9] p-5 font-mono text-sm leading-7 text-[#39372f] outline-none placeholder:text-[#aaa69b] focus:ring-2 focus:ring-inset focus:ring-[#b79558]/40"
                         />
                         <div className="flex flex-col gap-3 border-t border-[#eeeae1] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-                            <p className="text-xs text-[#8a867b]">For best results, include a complete function or file.</p>
+                            <p className="text-xs text-[#8a867b]">For best results, include a complete function.</p>
                             <button
                                 type="submit"
                                 disabled={!code.trim() || isSubmitting}
@@ -101,13 +108,26 @@ const CodeReview = () => {
                         </span>
                         <div>
                             <h2 className="font-semibold text-[#29271f]">Review results</h2>
-                            <p className="text-xs text-[#8a867b]">Your feedback will appear here</p>
+                            <p className="text-xs text-[#8a867b]">
+                                {isSubmitting ? 'Waiting for the AI review...' : 'Your feedback will appear here'}
+                            </p>
                         </div>
                     </div>
                     {error ? (
                         <p role="alert" className="rounded-lg border border-[#efd2cc] bg-[#fff4f1] p-4 text-sm text-[#9c4437]">
                             {error}
                         </p>
+                    ) : isSubmitting ? (
+                        <div
+                            role="status"
+                            className="flex items-center gap-3 rounded-lg bg-[#faf9f6] p-4 text-sm text-[#777368]"
+                        >
+                            <span
+                                aria-hidden="true"
+                                className="h-5 w-5 animate-spin rounded-full border-2 border-[#ded9cd] border-t-[#8a7043]"
+                            />
+                            <span>Reviewing your code...</span>
+                        </div>
                     ) : review ? (
                         <div className="whitespace-pre-wrap break-words rounded-lg bg-[#faf9f6] p-4 text-sm leading-7 text-[#454238]">
                             {review}
