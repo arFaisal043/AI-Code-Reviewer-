@@ -1,24 +1,23 @@
 import { interaction } from "../services/ai.services.js";
 
-const getResponse = async (req, res) => {
-    const prompt = req.body?.prompt;
+const getReview = async (req, res) => {
+    const code = req.body?.code;
 
-    if (typeof prompt !== "string" || !prompt.trim()) {
+    if (typeof code !== "string" || !code.trim()) {
         return res.status(400).json(
-            { error: "A non-empty prompt is required." }
+            { error: "Input is required." }
         );
     }
 
     try {
-        const response = await interaction(prompt.trim());
+        const response = await interaction(code.trim());
         return res.json({ response });
     } 
     catch (error) {
-        console.error("Failed to generate AI response:", error);
         return res.status(502).json({ error: "Failed to generate an AI response." });
     }
 };
 
 export const responseController = {
-    getResponse
+    getReview
 };

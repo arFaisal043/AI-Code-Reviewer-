@@ -3,7 +3,7 @@ import { responseController } from "../controller/ai.controller.js";
 
 const router = Router();
 
-router.post("/get-response", responseController.getResponse);
+router.post("/get-review", responseController.getReview);
 
 
-export const getResponseRoutes = router;
+export const getReviewRoutes = router;
